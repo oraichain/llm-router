@@ -1,4 +1,4 @@
-# NVIDIA AI Blueprint: LLM Router
+<h2><img align="center" src="https://github.com/user-attachments/assets/cbe0d62f-c856-4e0b-b3ee-6184b7c4d96f">NVIDIA AI Blueprint: LLM Router</h2>
 
 ## Overview
 
@@ -25,13 +25,33 @@ The key features of the LLM Router framework are:
 - Configurable: easily configure which backend models are available. 
 - Performant: LLM Router uses Rust and NVIDIA Triton Inference Server to add minimal latency compared to routing requests directly to a model.
 
+## Quickstart Guide
+
+After meeting the pre-requisites follow these steps.
+
+#### 1. Install necessary python libraries
+
+Create and activate a Python virtual environment, then run: 
+
+```
+pip install -r requirements.txt
+```
+
+#### 2. Access Jupyter Notebook
+
+Bring up Jupyter and open the notebook in the `launchable` directory called `1_Deploy_LLM_Router.ipynb`.
+
+```
+jupyter lab --no-browser --ip 0.0.0.0 --NotebookApp.token=’’
+```
+
 
 ## Software Components 
 
 The LLM Router has three components: 
 - <b>Router Controller</b> - is a service similar to a proxy that routes OpenAI compatible requests. The controller is implemented as a Rust proxy and the code is available in `src/router-controller`.
 - <b>Router Server</b> - is a service that classifies the user's prompt using a pre-trained model. In this blueprint, the router server is implemented as a NVIDIA Triton Inference Server with pre-trained router models based off of [`Nvidia/prompt-task-and-complexity-classifier`](https://huggingface.co/nvidia/prompt-task-and-complexity-classifier). The pre-trained router models are available on NGC.
-- <b>Downstream LLMs</b> - are the LLMs the prompt will be passed to, typically foundational LLMs. In this blueprint the downstream models are NVIDIA NIMs, specifically `meta/llama-3.1-70b-instruct`, `meta/llama-3.1-8b-instruct`, `mistralai/mixtral-8x22b-instruct-v0.1`, and `deepseek-ai/deepseek-r1`. Other LLMs are supported such as locally hosted NVIDIA NIMs or third party OpenAI compatible API endpoints.
+- <b>Downstream LLMs</b> - are the LLMs the prompt will be passed to, typically foundational LLMs. In this blueprint the downstream models are NVIDIA NIMs, specifically `meta/llama-3.1-70b-instruct`, `meta/llama-3.1-8b-instruct`, `mistralai/mixtral-8x22b-instruct-v0.1`, and `nvidia/llama-3.3-nemotron-super-49b-v1`. Other LLMs are supported such as locally hosted NVIDIA NIMs or third party OpenAI compatible API endpoints.
 
 ![architecture diagram](assets/llm-router-blueprint.png)
 
@@ -81,7 +101,7 @@ Use `$oauthtoken` as the username and the API key as the password.
 
 2. NVIDIA API Catalog key
 
-- Navigate to **[NVIDIA API Catalog](https://build.nvidia.com/explore/discover). 
+- Navigate to [NVIDIA API Catalog](https://build.nvidia.com/explore/discover). 
 - Click one of the models, such as llama3-8b-instruct. 
 - Select the "Docker" input option. 
 - Click "Get API Key".
@@ -100,26 +120,6 @@ Using a custom LLM-router model not included in blueprint (requirements may vary
 | GPU | Family | Memory | # of GPUs (min.) |
 | ------ | ------ | ------ | ------ |
 | A10G or newer | SXM or PCIe | 24GB | 1 |
-
-## Quickstart Guide
-
-After meeting the pre-requisites follow these steps.
-
-#### 1. Install necessary python libraries
-
-Create and activate a Python virtual environment, then run: 
-
-```
-pip install -r requirements.txt
-```
-
-#### 3. Access Jupyter Notebook
-
-Bring up Jupyter and open the notebook in the `launchable` direcotry called `1_Deploy_LLM_Router.ipynb`.
-
-```
-jupyter --no-browser --ip 0.0.0.0 --NotebookApp.token=’’
-```
 
 ## Understand the blueprint
 
@@ -155,7 +155,7 @@ policies:
       - name: Reasoning
         api_base: https://integrate.api.nvidia.com
         api_key: 
-        model: deepseek-ai/deepseek-r1
+        model: nvidia/llama-3.3-nemotron-super-49b-v1
     ...
 ```
 
@@ -259,6 +259,10 @@ The blueprint includes a variety of tools to help understand, evaluate, customiz
 - Metrics are automatically collected and can be exported via Prometheus to Grafana. Details are available in the source README and an example is provided in the quickstart notebook.
 - A sample loadtest is available in the `demo/loadtest` folder with instructions in the associated README.
 - The blueprint includes two default routing policies available for download from NGC. The `customize` directory includes two notebooks showing how each policy model was created. There is also an example notebook showing how to create a third policy. The `intent_router` is created by fine-tuning a model to classify prompts based on a user's intent, assuming they are interacting with a support chatbot at a bank.
+
+## License 3<sup>rd</sup> Party
+
+This project will download and install additional third-party open source software projects. Review the license terms of these open source projects before use.
 
 ## Security Considerations
 

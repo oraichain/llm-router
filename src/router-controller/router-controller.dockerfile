@@ -17,12 +17,19 @@ RUN ulimit -u 65535 && cargo build --release --no-default-features
 # RUN cargo build --release
 
 FROM nvcr.io/nvidia/base/ubuntu:22.04_20240212
-# RUN apt-get update && apt-get install -y curl jq ca-certificates
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends curl jq ca-certificates && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true
+RUN apt-get update && apt-get install -y curl jq ca-certificates build-essential wget
+# Manually install OpenSSL 1.1.1
+WORKDIR /tmp
+RUN wget https://www.openssl.org/source/openssl-1.1.1u.tar.gz && \
+    tar xzf openssl-1.1.1u.tar.gz && \
+    cd openssl-1.1.1u && \
+    ./config --prefix=/opt/openssl-1.1 && \
+    make -j"$(nproc)" && \
+    make install
+
+# Export runtime linker path
+ENV LD_LIBRARY_PATH="/opt/openssl-1.1/lib:$LD_LIBRARY_PATH"
+ENV PATH="/opt/openssl-1.1/bin:$PATH"
 COPY --from=router-controller-builder /app/target/release/llm-router-gateway-api /usr/local/bin/
 RUN mkdir -p /app
 WORKDIR /app

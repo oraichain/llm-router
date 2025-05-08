@@ -39,7 +39,8 @@ class LLMClient:
         history_openai_format = []
         for human, assistant in history:
             # remove model name from history
-            assistant = assistant.split("] ", maxsplit=1)[1]
+            if assistant is not None:
+                assistant = assistant.split("] ", maxsplit=1)[1]
 
             history_openai_format.append({"role": "user", "content": human})
             history_openai_format.append({"role": "assistant", "content": assistant})

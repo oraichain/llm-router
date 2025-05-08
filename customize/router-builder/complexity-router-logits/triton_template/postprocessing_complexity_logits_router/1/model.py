@@ -51,9 +51,30 @@ class TritonPythonModel:
         for request in requests:
             logits = pb_utils.get_input_tensor_by_name(request, "logits").as_numpy()
             self.logger.log_info(f"Logits Shape: {logits.shape}")
-            
-            # Directly return the original logits as the output tensor
-            output_tensor = pb_utils.Tensor("OUTPUT", logits.astype(np.float32))
+
+            # Process logits into separate outputs for each target
+            processed_logits = self.process_results(logits, self.target_sizes.values())
+            result = self.processor.process_logits(processed_logits)
+
+            # Build output vector: [complexity_score, creativity, reasoning, contextual_knowledge, number_of_few_shots, domain_knowledge, constraint_ct]
+            # All are lists of length batch_size, so we need to stack them per sample
+            batch_size = len(result["prompt_complexity_score"])
+            output_vectors = []
+            for i in range(batch_size):
+                vector = [
+                    result["prompt_complexity_score"][i],
+                    result["creativity_scope"][i],
+                    result["reasoning"][i],
+                    result["contextual_knowledge"][i],
+                    result["number_of_few_shots"][i],
+                    result["domain_knowledge"][i],
+                    result["constraint_ct"][i],
+                ]
+                output_vectors.append(vector)
+            output_array = np.array(output_vectors, dtype=np.float32)
+            self.logger.log_info(f"Output vector shape: {output_array.shape}")
+
+            output_tensor = pb_utils.Tensor("OUTPUT", output_array)
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
         

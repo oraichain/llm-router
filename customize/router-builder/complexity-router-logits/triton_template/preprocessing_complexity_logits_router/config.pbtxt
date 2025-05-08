@@ -1,4 +1,4 @@
-name: "preprocessing_complexity_router"
+name: "preprocessing_complexity_logits_router"
 backend: "python"
 max_batch_size: 8
 input [

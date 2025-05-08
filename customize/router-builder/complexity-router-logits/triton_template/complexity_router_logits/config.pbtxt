@@ -1,4 +1,4 @@
-name: "complexity_router"
+name: "complexity_router_logits"
 platform: "pytorch_libtorch"
 max_batch_size: 8
 input [

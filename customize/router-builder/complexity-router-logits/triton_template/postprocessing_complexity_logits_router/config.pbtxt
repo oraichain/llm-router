@@ -1,4 +1,4 @@
-name: "postprocessing_complexity_router"
+name: "postprocessing_complexity_logits_router"
 backend: "python"
 max_batch_size: 8
 

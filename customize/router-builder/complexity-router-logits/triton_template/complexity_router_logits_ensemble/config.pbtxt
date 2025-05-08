@@ -1,4 +1,4 @@
-name: "complexity_router_ensemble"
+name: "complexity_router_logits_ensemble"
 platform: "ensemble"
 max_batch_size: 8
 input [
@@ -18,7 +18,7 @@ output [
 ensemble_scheduling {
     step [
         {
-            model_name: "preprocessing_complexity_router"
+            model_name: "preprocessing_complexity_logits_router"
             model_version: -1
             input_map {
                 key: "INPUT"
@@ -34,7 +34,7 @@ ensemble_scheduling {
                 }
         },
         {
-            model_name: "complexity_router"
+            model_name: "complexity_router_logits"
             model_version: -1
             input_map {
                 key: "preprocessed_input_ids"
@@ -50,7 +50,7 @@ ensemble_scheduling {
                 }
         },
         {
-            model_name: "postprocessing_complexity_router"
+            model_name: "postprocessing_complexity_logits_router"
             model_version: -1
             input_map {
                 key: "logits"

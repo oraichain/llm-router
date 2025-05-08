@@ -1,10 +1,12 @@
 services:
 
   router-server:
-    build:
-      context: .
-      dockerfile: src/router-server/router-server.dockerfile
-    image: router-server:latest
+    #build:
+     # context: .
+     # dockerfile: src/router-server/router-server.dockerfile
+    #image: nvcr.io/nvidia/tritonserver:23.03-py3
+    #image: nvcr.io/nvidia/tritonserver:21.12-py3
+    image: router-server
     shm_size: 8G
     ulimits:
       nproc: 65535
@@ -12,7 +14,9 @@ services:
       stack: 67108864
     volumes:
       - ./routers/:/model_repository
-    command: tritonserver --log-verbose=1 --model-repository=/model_repository
+    tty: true
+    command: tail -f /dev/null
+    #command: tritonserver --log-verbose=1 --model-repository=/model_repository
     ports:
       - "8000:8000"
       - "8001:8001"
@@ -22,12 +26,13 @@ services:
     environment:
       - PIP_NO_SPINNER=1  # Disable pip progress bar during runtime
       - CUDA_VISIBLE_DEVICES=0  # Ensure GPU 0 is visible
+    pids_limit: 1024
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: [ "0" ]
+              device_ids: [ "0","1","2" ]
               capabilities: [ gpu ]
 
 
